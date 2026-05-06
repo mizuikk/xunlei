@@ -18,6 +18,10 @@ type Config struct {
 	Port uint16 //网页访问的端口
 	Ip   net.IP //网页访问绑定IP，默认绑定所有IP
 
+	DownloadPort         uint16 //迅雷对外TCP端口，便于手动放行防火墙
+	DownloadPortRange    string //迅雷额外TCP端口范围，格式 起始-结束
+	DownloadPortRangeUDP string //迅雷UDP端口范围，格式 起始-结束
+
 	DashboardUsername string //网页访问的用户名
 	DashboardPassword string //网页访问的密码
 
@@ -57,6 +61,9 @@ func ConfigBind(cfg *Config) (err error) {
 	flags.Var(&cfg.SpkUrl, "spk", "", "SPK 下载链接", "XL_SPK")
 	flags.Var(&cfg.SpkForceDownload, "spk_force_download", "F", "强制下载", "XL_SPK_FORCE_DOWNLOAD")
 	flags.Var(&cfg.LauncherLogFile, "launcher_log_file", "", "迅雷启动器日志文件", "XL_LAUNCHER_LOG_FILE")
+	flags.Var(&cfg.DownloadPort, "download_port", "", "迅雷对外TCP端口，对应 pan-cli 的 DrivePublicPort", "XL_DOWNLOAD_PORT", "XL_DRIVE_PUBLIC_PORT")
+	flags.Var(&cfg.DownloadPortRange, "download_port_range", "", "迅雷额外TCP端口范围，格式 起始-结束，对应 pan-cli 的 FreePortRange", "XL_DOWNLOAD_PORT_RANGE", "XL_FREE_PORT_RANGE")
+	flags.Var(&cfg.DownloadPortRangeUDP, "download_port_range_udp", "", "迅雷UDP端口范围，格式 起始-结束，对应 pan-cli 的 FreePortRangeUDP", "XL_DOWNLOAD_PORT_RANGE_UDP", "XL_FREE_PORT_RANGE_UDP")
 	flags.Var(&cfg.Debug, "debug", "", "调试模式,调试模式下，失败也不会自动退出,在此模式行，日志等级自动调整为`debug`", "XL_DEBUG")
 	flags.Var(&cfg.Log, "log", "", "日志等级, 可选 debug,info/information,warn/warning,error/err", "XL_LOG")
 	flags.Var(&cfg.chroot, "chroot", "", "已过期 **请使用 --root/-r 替代**")

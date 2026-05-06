@@ -30,6 +30,10 @@ services:
       - XL_GID=1000 # 用户组ID
       # 建议关闭自动更新，避免运行时替换二进制
       - XL_PREVENT_UPDATE=true
+      # host 网络模式下，如需手动放行固定端口，可按需设置
+      # - XL_DOWNLOAD_PORT=21603
+      # - XL_DOWNLOAD_PORT_RANGE=32000-32000
+      # - XL_DOWNLOAD_PORT_RANGE_UDP=32001-32001
     volumes:
       ## 二选一必须，对应 XL_DIR_DOWNLOAD 指定的目录, 请替换冒号前面的路径为实际路径
       #- /vol1/1000/下载:/xunlei/下载

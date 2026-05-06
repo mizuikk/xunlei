@@ -51,6 +51,9 @@ func main() {
 	slog.InfoContext(ctx, fmt.Sprintf(`build time: %s`, flags.GetBuildTime().In(time.Local).Format(time.RFC3339)))
 	slog.InfoContext(ctx, fmt.Sprintf("port: %d", cfg.Port))
 	slog.InfoContext(ctx, fmt.Sprintf("ip: %s", cfg.Ip))
+	slog.InfoContext(ctx, fmt.Sprintf("download port: %d", cfg.DownloadPort))
+	slog.InfoContext(ctx, fmt.Sprintf("download tcp port range: %s", cfg.DownloadPortRange))
+	slog.InfoContext(ctx, fmt.Sprintf("download udp port range: %s", cfg.DownloadPortRangeUDP))
 	slog.InfoContext(ctx, fmt.Sprintf("dashboard username: %s", cfg.DashboardUsername))
 	slog.InfoContext(ctx, fmt.Sprintf("dashboard password: %s", utils.PasswordMask(cfg.DashboardPassword)))
 	for i, dir := range cfg.DirDownload {

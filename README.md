@@ -11,7 +11,7 @@
 从迅雷群晖套件中提取出来用于其他设备的迅雷远程下载服务程序。仅供研究学习测试。 \
 本程序仅提供 Linux 模拟和容器化运行环境，未对原版迅雷程序进行任何修改。
 
-**当前为测试版本，版本号 [4.0.1-beta](https://hub.docker.com/layers/cnk3x/xunlei/4.0.1-beta)，且并未大规模验证。**
+**当前为测试版本，版本号 [4.0.2-beta](https://hub.docker.com/layers/cnk3x/xunlei/4.0.2-beta)，且并未大规模验证。**
 
 **3.20 版本介绍在此: (https://github.com/cnk3x/xunlei/tree/v3.20.2)**
 
@@ -33,8 +33,8 @@ cnk3x/xunlei:beta
 ghcr.io/cnk3x/xunlei:beta
 
 # 或者指定版本
-cnk3x/xunlei:4.0.1-beta
-ghcr.io/cnk3x/xunlei:4.0.1-beta
+cnk3x/xunlei:4.0.2-beta
+ghcr.io/cnk3x/xunlei:4.0.2-beta
 ```
 
 #### 参数
@@ -56,6 +56,9 @@ OPTIONS:
       --spk string                  SPK 下载链接 [XL_SPK] (default "https://down.sandai.net/nas/nasxunlei-DSM7-x86_64.spk")
   -F, --force_download              强制下载 [XL_SPK_FORCE_DOWNLOAD]
       --launcher_log_file string    迅雷启动器日志文件 [XL_LAUNCHER_LOG_FILE]
+      --download_port uint16        迅雷对外TCP端口，对应 pan-cli 的 DrivePublicPort [XL_DOWNLOAD_PORT, XL_DRIVE_PUBLIC_PORT]
+      --download_port_range string  迅雷额外TCP端口范围，格式 起始-结束，对应 pan-cli 的 FreePortRange [XL_DOWNLOAD_PORT_RANGE, XL_FREE_PORT_RANGE]
+      --download_port_range_udp string 迅雷UDP端口范围，格式 起始-结束，对应 pan-cli 的 FreePortRangeUDP [XL_DOWNLOAD_PORT_RANGE_UDP, XL_FREE_PORT_RANGE_UDP]
       --debug                       是否开启调试日志 [XL_DEBUG]
 ```
 
@@ -70,6 +73,12 @@ XL_DASHBOARD_IP=
 XL_DASHBOARD_USERNAME=
 # 网页访问的密码
 XL_DASHBOARD_PASSWORD=
+# 迅雷对外TCP端口，默认由迅雷自行选择额外端口
+XL_DOWNLOAD_PORT=
+# 迅雷额外TCP端口范围，格式 起始-结束，例如 32000-32000
+XL_DOWNLOAD_PORT_RANGE=
+# 迅雷UDP端口范围，格式 起始-结束，例如 32001-32001
+XL_DOWNLOAD_PORT_RANGE_UDP=
 # 如果需要指定多个下载目录，手动指定XL_DIR_DOWNLOAD
 # 多个以冒号`:`隔开，在容器内,都必须以 /xunlei 开头，迅雷面板选择保存路径显示会去掉/xunlei前缀
 # 指定后可以在 volumes 中绑定宿主机实际目录
@@ -93,6 +102,20 @@ XL_UID=0
 XL_GID=0
 # 是否开启调试日志
 XL_DEBUG=false
+```
+
+如果你使用 `network_mode: host`，并且希望在 OpenWrt 或其他防火墙上手动放行固定端口，建议同时设置：
+
+- `XL_DOWNLOAD_PORT`：主对外 TCP 端口，当前默认值通常是 `21603`
+- `XL_DOWNLOAD_PORT_RANGE`：额外 TCP 端口范围，格式 `起始-结束`
+- `XL_DOWNLOAD_PORT_RANGE_UDP`：UDP 端口范围，格式 `起始-结束`
+
+例如将所有动态端口固定为单端口：
+
+```shell
+XL_DOWNLOAD_PORT=21603
+XL_DOWNLOAD_PORT_RANGE=32000-32000
+XL_DOWNLOAD_PORT_RANGE_UDP=32001-32001
 ```
 
 #### 示例: docker-compose
@@ -130,6 +153,10 @@ services:
       - XL_GID=1000 # 用户组ID
       # 建议关闭自动更新，避免运行时替换二进制
       - XL_PREVENT_UPDATE=true
+      # host 网络模式下，如需手动放行固定端口，可按需设置
+      # - XL_DOWNLOAD_PORT=21603
+      # - XL_DOWNLOAD_PORT_RANGE=32000-32000
+      # - XL_DOWNLOAD_PORT_RANGE_UDP=32001-32001
     volumes:
       ## 二选一必须，对应 XL_DIR_DOWNLOAD 指定的目录, 请替换冒号前面的路径为实际路径
       #- /vol1/1000/下载:/xunlei/下载

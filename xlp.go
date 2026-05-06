@@ -22,7 +22,7 @@ import (
 	"github.com/cnk3x/xunlei/spk"
 )
 
-const Version = "4.0.1"
+const Version = "4.0.2"
 
 const (
 	SYNOPKG_DSM_VERSION_MAJOR = "7"              //系统的主版本
@@ -119,7 +119,7 @@ func Run(cfg Config) func(ctx context.Context) error {
 			return
 		}
 
-		envs := mockEnv(dirData, strings.Join(dirDownload, ":"))
+		envs := mockEnv(cfg, dirData, strings.Join(dirDownload, ":"))
 
 		go webRun(log.Prefix(ctx, "web"), envs, cfg, cancel)
 
@@ -190,9 +190,9 @@ func webRun(ctx context.Context, env []string, cfg Config, onDone func()) {
 	}
 }
 
-func mockEnv(dirData, dirDownload string) []string {
+func mockEnv(cfg Config, dirData, dirDownload string) []string {
 	// ld_lib := os.Getenv("LD_LIBRARY_PATH")
-	return append(os.Environ(),
+	envs := append(os.Environ(),
 		"SYNOPLATFORM="+SYNO_PLATFORM,
 		"SYNOPKG_PKGNAME="+SYNOPKG_PKGNAME,
 		"SYNOPKG_PKGDEST="+DIR_SYNOPKG_PKGDEST,
@@ -208,6 +208,18 @@ func mockEnv(dirData, dirDownload string) []string {
 		"GIN_MODE=release",
 		// "LD_LIBRARY_PATH=/lib"+utils.Iif(ld_lib == "", "", ":")+ld_lib,
 	)
+
+	if cfg.DownloadPort != 0 {
+		envs = append(envs, fmt.Sprintf("DrivePublicPort=%d", cfg.DownloadPort))
+	}
+	if cfg.DownloadPortRange != "" {
+		envs = append(envs, "FreePortRange="+cfg.DownloadPortRange)
+	}
+	if cfg.DownloadPortRangeUDP != "" {
+		envs = append(envs, "FreePortRangeUDP="+cfg.DownloadPortRangeUDP)
+	}
+
+	return envs
 }
 
 func mockSyno(ctx context.Context, root string) (undo func(), err error) {
