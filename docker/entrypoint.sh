@@ -5,6 +5,17 @@ guest_root="${XL_GUEST_ROOT:-/guest}"
 host_data_dir="${XL_HOST_DATA_DIR:-/xunlei/data}"
 host_cache_dir="${XL_HOST_CACHE_DIR:-/xunlei/var/packages/pan-xunlei-com}"
 download_paths="${XL_DIR_DOWNLOAD:-/xunlei/downloads}"
+fake_proc_root="${XL_FAKE_PROC_ROOT:-/tmp/xlp-fake-proc}"
+
+link_fake_proc() {
+  local source_path="$1"
+  local target_path="$2"
+
+  [[ -e "${source_path}" ]] || return 0
+
+  mkdir -p "$(dirname "${target_path}")"
+  ln -snf "${source_path}" "${target_path}"
+}
 
 mkdir -p \
   "${guest_root}" \
@@ -20,11 +31,50 @@ mkdir -p \
   "${host_data_dir}" \
   "${host_cache_dir}"
 
+rm -rf "${fake_proc_root}"
+mkdir -p "${fake_proc_root}/self" "${fake_proc_root}/1"
+
+# Pan CLI will reject the Synology profile once it sees Docker overlay mounts.
+# Keep the proc files it needs, but replace the mount and cgroup views.
+for path in cpuinfo loadavg meminfo stat uptime version filesystems vmstat diskstats swaps interrupts kcore keys timer_list; do
+  link_fake_proc "/host-proc/${path}" "${fake_proc_root}/${path}"
+done
+
+for path in net sys; do
+  link_fake_proc "/host-proc/${path}" "${fake_proc_root}/${path}"
+done
+
+for path in auxv cmdline cwd environ exe fd fdinfo maps root stat status task ns; do
+  link_fake_proc "/host-proc/self/${path}" "${fake_proc_root}/self/${path}"
+done
+
+for path in cmdline environ exe fd fdinfo maps root stat status task ns; do
+  link_fake_proc "/host-proc/1/${path}" "${fake_proc_root}/1/${path}"
+done
+
+cat >"${fake_proc_root}/mounts" <<'EOF'
+/dev/root / ext4 rw 0 0
+proc /proc proc rw 0 0
+EOF
+cp "${fake_proc_root}/mounts" "${fake_proc_root}/self/mounts"
+cp "${fake_proc_root}/mounts" "${fake_proc_root}/1/mounts"
+
+cat >"${fake_proc_root}/mountinfo" <<'EOF'
+1 0 0:1 / / rw,relatime - rootfs rootfs rw
+2 1 0:2 / /proc rw,relatime - proc proc rw
+EOF
+cp "${fake_proc_root}/mountinfo" "${fake_proc_root}/self/mountinfo"
+cp "${fake_proc_root}/mountinfo" "${fake_proc_root}/1/mountinfo"
+
+printf '0::/\n' >"${fake_proc_root}/self/cgroup"
+cp "${fake_proc_root}/self/cgroup" "${fake_proc_root}/1/cgroup"
+
 proot_args=(
   -r "${guest_root}"
   -w /
   -0
-  -b /proc:/proc
+  -b /proc:/host-proc
+  -b "${fake_proc_root}:/proc"
   -b /dev:/dev
   -b /sys:/sys
   -b /tmp:/tmp
