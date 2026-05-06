@@ -22,7 +22,7 @@ import (
 	"github.com/cnk3x/xunlei/spk"
 )
 
-const Version = "4.0.0"
+const Version = "4.0.1"
 
 const (
 	SYNOPKG_DSM_VERSION_MAJOR = "7"              //系统的主版本

@@ -7,8 +7,7 @@ services:
     # 宿主机名，迅雷远程控制的名称与此相关，会显示 `群晖-r66s`
     hostname: r66s
 
-    # 必须, cap_add: [SYS_ADMIN] 和 privileged: true 二选一
-    cap_add: [SYS_ADMIN]
+    # 不再需要 SYS_ADMIN，默认权限即可运行
 
     # 面板访问端口，如需更改访问端口到5432，替换前面的2345为5432即可
     ports: [2345:2345/tcp]
@@ -29,6 +28,8 @@ services:
       # 设置用户身份，请确保该用户对 XL_DIR_DOWNLOAD 指定的目录或者默认的 /xunlei/downloads 有读写权限
       - XL_UID=1000 # 用户ID
       - XL_GID=1000 # 用户组ID
+      # 建议关闭自动更新，避免运行时替换二进制
+      - XL_PREVENT_UPDATE=true
     volumes:
       ## 二选一必须，对应 XL_DIR_DOWNLOAD 指定的目录, 请替换冒号前面的路径为实际路径
       #- /vol1/1000/下载:/xunlei/下载

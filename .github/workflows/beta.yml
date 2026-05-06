@@ -69,6 +69,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          build-args: |
+            BUILD_TIME=${{ steps.version.outputs.build_time }}
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |

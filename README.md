@@ -11,7 +11,7 @@
 从迅雷群晖套件中提取出来用于其他设备的迅雷远程下载服务程序。仅供研究学习测试。 \
 本程序仅提供 Linux 模拟和容器化运行环境，未对原版迅雷程序进行任何修改。
 
-**当前为测试版本，版本号 [4.0.0-beta](https://hub.docker.com/layers/cnk3x/xunlei/4.0.0-beta)，且并未大规模验证。**
+**当前为测试版本，版本号 [4.0.1-beta](https://hub.docker.com/layers/cnk3x/xunlei/4.0.1-beta)，且并未大规模验证。**
 
 **3.20 版本介绍在此: (https://github.com/cnk3x/xunlei/tree/v3.20.2)**
 
@@ -33,8 +33,8 @@ cnk3x/xunlei:beta
 ghcr.io/cnk3x/xunlei:beta
 
 # 或者指定版本
-cnk3x/xunlei:4.0.0-beta
-ghcr.io/cnk3x/xunlei:4.0.0-beta
+cnk3x/xunlei:4.0.1-beta
+ghcr.io/cnk3x/xunlei:4.0.1-beta
 ```
 
 #### 参数
@@ -107,8 +107,7 @@ services:
     # 宿主机名，迅雷远程控制的名称与此相关，会显示 `群晖-r66s`
     hostname: r66s
 
-    # 必须, cap_add: [SYS_ADMIN] 和 privileged: true 二选一
-    cap_add: [SYS_ADMIN]
+    # 不再需要 SYS_ADMIN，默认权限即可运行
 
     # 面板访问端口，如需更改访问端口到5432，替换前面的2345为5432即可
     ports: [2345:2345/tcp]
@@ -129,6 +128,8 @@ services:
       # 设置用户身份，请确保该用户对 XL_DIR_DOWNLOAD 指定的目录或者默认的 /xunlei/downloads 有读写权限
       - XL_UID=1000 # 用户ID
       - XL_GID=1000 # 用户组ID
+      # 建议关闭自动更新，避免运行时替换二进制
+      - XL_PREVENT_UPDATE=true
     volumes:
       ## 二选一必须，对应 XL_DIR_DOWNLOAD 指定的目录, 请替换冒号前面的路径为实际路径
       #- /vol1/1000/下载:/xunlei/下载
