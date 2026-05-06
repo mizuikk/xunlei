@@ -6,6 +6,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: 设置时区
         run: |
@@ -69,7 +72,7 @@ jobs:
         with:
           registry: ghcr.io
           username: "${{ github.actor }}"
-          password: "${{ secrets.GH_TOKEN }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: 构建推送
         uses: docker/build-push-action@v5
