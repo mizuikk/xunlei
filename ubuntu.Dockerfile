@@ -2,7 +2,7 @@ FROM --platform=${TARGETARCH} ubuntu:focal
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.authors=cnk3x
-LABEL org.opencontainers.image.source=https://github.com/cnk3x/xunlei
+LABEL org.opencontainers.image.source=https://github.com/mizuikk/xunlei
 
 RUN apt update && apt install --no-install-recommends -y ca-certificates tzdata && rm -rf /var/lib/apt/lists/* && \
   rm -f /etc/localtime /etc/timezone && \
@@ -22,4 +22,3 @@ ENV XL_DASHBOARD_PORT=2345 \
   XL_DEBUG=
 
 CMD [ "/xlp" ]
-

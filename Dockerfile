@@ -43,7 +43,7 @@ RUN chmod +x /guest/xlp /entrypoint.sh \
     /xunlei/var/packages/pan-xunlei-com
 
 LABEL org.opencontainers.image.authors=cnk3x \
-  org.opencontainers.image.source=https://github.com/cnk3x/xunlei \
+  org.opencontainers.image.source=https://github.com/mizuikk/xunlei \
   org.opencontainers.image.description="迅雷远程下载服务(非官方)" \
   org.opencontainers.image.licenses=MIT
 

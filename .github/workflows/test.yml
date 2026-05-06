@@ -17,7 +17,7 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v6
         with:
-          repository: cnk3x/xunlei
+          repository: mizuikk/xunlei
           ref: "${{ github.ref }}"
 
       - name: 设置版本
@@ -77,6 +77,6 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/cnk3x/xunlei:${{ steps.version.outputs.v_test }}
+          tags: ghcr.io/mizuikk/xunlei:${{ steps.version.outputs.v_test }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

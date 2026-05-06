@@ -37,8 +37,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            cnk3x/xunlei
-            ghcr.io/cnk3x/xunlei
+            mizuikk/xunlei
+            ghcr.io/mizuikk/xunlei
           tags: |
             type=semver,pattern={{version}},value=v${{ steps.version.outputs.v_xlp }}
             type=semver,pattern={{major}}.{{minor}},value=v${{ steps.version.outputs.v_xlp }}
